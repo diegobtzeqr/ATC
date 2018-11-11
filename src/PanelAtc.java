@@ -18,6 +18,8 @@
 */
 
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import javax.swing.*;
 
@@ -123,7 +125,14 @@ public class PanelAtc extends JPanel implements Runnable {
 	}
 	
 	private void readyForTermination() {
-		
+		addKeyListener( new KeyAdapter() { 
+			public void keyPressed(KeyEvent e) { 
+				int keyCode = e.getKeyCode();
+				if ((keyCode == KeyEvent.VK_ESCAPE)) {
+					System.exit(0);
+				}				
+			} 
+		});
 	}
 
 	private void paintScreen(){

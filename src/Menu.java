@@ -28,7 +28,7 @@ public class Menu extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private JLabel callsign, planeType, distance, welcome, instructions1, instructions2, addPlaneLabel, addInstructions, entryPointLabel, numberPlanes;
 	private JTextField callsignTxt, planeTypeTxt, distanceTxt; 
-	private JButton addPlane, testSafe, testDanger, simulate;
+	private JButton addPlane, testSafe, testDanger, simulate, exit;
 	private String cs, pt, ep;
 	private String[] entryPointNames = {"South", "NorthEast", "NorthWest"};
 	private JComboBox<Object> entryPoints;
@@ -53,6 +53,7 @@ public class Menu extends JFrame implements ActionListener {
 		addPlane = new JButton("Add Plane");
 		simulate = new JButton("Simulate");
 		testSafe = new JButton("Safe Test");
+		exit = new JButton("Exit");
 		testDanger = new JButton("Danger Test");
 		welcome.setFont(new Font("TimesRoman", Font.BOLD, 20));
 		instructions1.setFont(new Font("TimesRoman", Font.PLAIN, 16));
@@ -62,6 +63,11 @@ public class Menu extends JFrame implements ActionListener {
 		entryPoints.setSelectedIndex(0);
 		planes = new ArrayList<>();
 		numberPlanes = new JLabel("Number of planes in simulation: " + planes.size() + " ", SwingConstants.RIGHT);
+		
+		Panel p = new Panel();
+		p.setLayout(new GridLayout(1,2));
+		p.add(welcome);
+		p.add(exit);
 		
 		Panel p1 = new Panel();
 		p1.setLayout(new GridLayout(5,2));
@@ -78,7 +84,7 @@ public class Menu extends JFrame implements ActionListener {
 		
 		Panel p2 = new Panel();
 		p2.setLayout(new GridLayout(5,1));
-		p2.add(welcome);
+		p2.add(p);
 		p2.add(instructions1);
 		p2.add(instructions2);
 		
@@ -103,6 +109,7 @@ public class Menu extends JFrame implements ActionListener {
 		testSafe.addActionListener(this);
 		testDanger.addActionListener(this);
 		entryPoints.addActionListener(this);
+		exit.addActionListener(this);
 		this.setSize(1200, 1000);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setUndecorated(true);
@@ -173,10 +180,16 @@ public class Menu extends JFrame implements ActionListener {
 		    app.setResizable(false);  
 		    app.setVisible(true);
 		}
+		
+		if (ae.getSource().equals(exit)) {
+			System.exit(0);
+		}
 	}
 	
 	public static void main(String args[]) {
+		@SuppressWarnings("unused")
 		Menu m = new Menu();
+		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 		String option;
 		
@@ -187,23 +200,25 @@ public class Menu extends JFrame implements ActionListener {
 					"    under certain conditions; type `show c' for details.");
 			System.out.print("\n    Option: ");
 			option = sc.nextLine();
+			
 			System.out.println("");
+			
 			switch(option) {
-			case "show w":
-				System.out.println("    ATC is distributed in the hope that it will be useful,\r\n" + 
-						"    but WITHOUT ANY WARRANTY; without even the implied warranty of\r\n" + 
-						"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\r\n" + 
-						"    GNU General Public License for more details.\n");
-				break;
-			case "show c":
-				System.out.println("    ATC is free software: you can redistribute it and/or modify\r\n" + 
-						"    it under the terms of the GNU General Public License as published by\r\n" + 
-						"    the Free Software Foundation, either version 3 of the License, or\r\n" + 
-						"    (at your option) any later version.\n");
-				break;
-			default:
-				System.out.println("Invalid Option.\n");
-				break;
+				case "show w":
+					System.out.println("    ATC is distributed in the hope that it will be useful,\r\n" + 
+							"    but WITHOUT ANY WARRANTY; without even the implied warranty of\r\n" + 
+							"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\r\n" + 
+							"    GNU General Public License for more details.\n");
+					break;
+				case "show c":
+					System.out.println("    ATC is free software: you can redistribute it and/or modify\r\n" + 
+							"    it under the terms of the GNU General Public License as published by\r\n" + 
+							"    the Free Software Foundation, either version 3 of the License, or\r\n" + 
+							"    (at your option) any later version.\n");
+					break;
+				default:
+					System.out.println("Invalid Option.\n");
+					break;
 			}
 		} while (true);
 	}
