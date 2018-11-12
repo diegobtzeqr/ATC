@@ -120,11 +120,11 @@ public class ATC {
 			p.setAltitudeChange(10250, 225);
 			p.setSpeedGoal(19, 225);
 			p.setGoalHeading(90, 'L');
-		} else if (p.getX() >= 270 && p.getX() <= 290 && p.getY() >= 770 && p.getY() <= 790) {
+		} else if (p.getX() >= 265 && p.getX() <= 295 && p.getY() >= 770 && p.getY() <= 790) {
 			p.setAltitudeChange(7300, 333);
 			p.setSpeedGoal(16, 333);
 			p.setGoalHeading(330, 'L');
-		} else if (p.getX() >= 595 && p.getX() <= 605 && p.getY() >= 683 && p.getY() <= 692) {
+		} else if (p.getX() >= 595 && p.getX() <= 605 && p.getY() >= 680 && p.getY() <= 695) {
 			p.land();
 		}
 	}
