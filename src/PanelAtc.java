@@ -35,25 +35,30 @@ public class PanelAtc extends JPanel implements Runnable {
 	private static final int PWIDTH = 1200;
 	private static final int PHEIGHT = 1000;
 	
+	// Constructor for automatic simulations, depending on the boolean variable "danger" it will or won't
+	// add a new plane that will have conflict with another one.
 	public PanelAtc(boolean danger) {
+		// Create a new ATC.
 		atc = new ATC();
-		// NE planes - 70
-		atc.addPlane(new Plane("SLI145", "E190", 950.0, 0.0, 22000.0, 110, 32.0, atc));
-		atc.addPlane(new Plane("IJ2240", "A320", 1093.65, -394.67, 22000.0, 110, 32.0, atc));
-		atc.addPlane(new Plane("AM2", "B789", 1360.42, -1127.63, 22000.0, 110, 32.0, atc));
-		// S planes - 20
-		atc.addPlane(new Plane("AM2463", "B738", 790.0, 1000.0, 28000.0, 250, 36.0, atc));
-		atc.addPlane(new Plane("AFR178", "A388", 961.01, 1469.85, 28000.0, 250, 36.0, atc));
-		atc.addPlane(new Plane("AM90", "B788", 1268.83, 2315.57, 28000.0, 250, 36.0, atc));
-		atc.addPlane(new Plane("VOI705", "A320", 1371.43, 2597.48, 28000.0, 250, 36.0, atc));
-		// NW planes - 25
-		atc.addPlane(new Plane("VOI667", "A321", 200.0, 0.0, 20000.0, 65, 30.0, atc));
-		atc.addPlane(new Plane("ACA996", "A319", 94.35, -226.58, 20000.0, 65, 30.0, atc));
-		atc.addPlane(new Plane("VIV3307", "A320", -32.44, -498.47, 20000.0, 65, 30.0, atc));
-		atc.addPlane(new Plane("AM189", "B737", -526.9, -1558.85, 20000.0, 65, 30.0, atc));
+		// Add planes to ATC
+		// Northeast planes (DATUL)
+		atc.addPlane(new Plane("SLI145", "E190", 950.0, 0.0, 22000.0, 110, 32.0, atc)); // 0 kms.
+		atc.addPlane(new Plane("IJ2240", "A320", 1093.65, -394.67, 22000.0, 110, 32.0, atc)); // 8.4 kms.
+		atc.addPlane(new Plane("AM2", "B789", 1360.42, -1127.63, 22000.0, 110, 32.0, atc)); // 24 kms.
+		// South planes
+		atc.addPlane(new Plane("AM2463", "B738", 790.0, 1000.0, 28000.0, 250, 36.0, atc)); // 0 kms.
+		atc.addPlane(new Plane("AFR178", "A388", 961.01, 1469.85, 28000.0, 250, 36.0, atc)); // 10 kms.
+		atc.addPlane(new Plane("AM90", "B788", 1268.83, 2315.57, 28000.0, 250, 36.0, atc)); // 28 kms.
+		atc.addPlane(new Plane("VOI705", "A320", 1371.43, 2597.48, 28000.0, 250, 36.0, atc)); // 34 kms.
+		// Northwest planes (KOBEK)
+		atc.addPlane(new Plane("VOI667", "A321", 200.0, 0.0, 20000.0, 65, 30.0, atc)); // 0 kms.
+		atc.addPlane(new Plane("ACA996", "A319", 94.35, -226.58, 20000.0, 65, 30.0, atc)); // 5 kms
+		atc.addPlane(new Plane("VIV3307", "A320", -32.44, -498.47, 20000.0, 65, 30.0, atc)); // 11 kms.
+		atc.addPlane(new Plane("AM189", "B737", -526.9, -1558.85, 20000.0, 65, 30.0, atc)); // 34.4 kms.
 		
 		if (danger) {
-			atc.addPlane(new Plane("Dangerous", "C300", 1080.72, 1798.74, 28000.0, 250, 36.0, atc));
+			// South plane
+			atc.addPlane(new Plane("Dangerous", "C300", 1080.72, 1798.74, 28000.0, 250, 36.0, atc)); // 17 kms, 
 		}
 		
 		setBackground(Color.white);
@@ -63,9 +68,12 @@ public class PanelAtc extends JPanel implements Runnable {
 		readyForTermination();
 	}
 	
+	// Constructor for custom simulation.
 	public PanelAtc(ArrayList<Plane> planes) {
+		// Create ATC.
 		atc = new ATC();
 		
+		// Add each of the planes gotten from the parameters.
 		for (Plane p: planes) {
 			p.setATC(atc);
 			atc.addPlane(p);
@@ -78,12 +86,14 @@ public class PanelAtc extends JPanel implements Runnable {
 		readyForTermination();
 	}
 	
+	// Start simulator.
 	public void addNotify()
 	{
 		super.addNotify();
 		start();
 	}
 	
+	// Start ATC and Animation.
 	private void start()
 	{
 		if (animator == null){
@@ -93,6 +103,7 @@ public class PanelAtc extends JPanel implements Runnable {
 		}
 	}
 	
+	// Paint screen 60 times per second.
 	public void run(){
 		while(true){
 			render();
@@ -103,6 +114,7 @@ public class PanelAtc extends JPanel implements Runnable {
 		}
 	}
 	
+	// Render all the elements.
 	private void render(){
 		if(dbImage == null){
 			dbImage = createImage(PWIDTH,PHEIGHT);
@@ -124,6 +136,7 @@ public class PanelAtc extends JPanel implements Runnable {
 			g.drawImage(dbImage, 0, 0, null);
 	}
 	
+	// Listener to end program when the key "Esc" is pressed.
 	private void readyForTermination() {
 		addKeyListener( new KeyAdapter() { 
 			public void keyPressed(KeyEvent e) { 
@@ -134,7 +147,8 @@ public class PanelAtc extends JPanel implements Runnable {
 			} 
 		});
 	}
-
+	
+	// Paint everything that requires "Graphics"
 	private void paintScreen(){
 		Graphics g;
 		try{

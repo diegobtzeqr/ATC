@@ -22,6 +22,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 public class Plane implements Runnable {
+	// Required attributes of planes.
 	private String callsign;
 	private String model;
 	private double x;
@@ -42,13 +43,15 @@ public class Plane implements Runnable {
 	private boolean danger;
 	private boolean gate;
 	
+	// Plane constructor.
 	public Plane(String cs, String mdl, double xCoord, double yCoord, double zCoord, int hdng, double spd, ATC at) {
 		callsign = cs;
-		model = mdl;
+		setModel(mdl);
 		x = xCoord;
 		y = yCoord;
 		altitude = zCoord;
 		speed = spd / 3.6;
+		// Calculate speed in X and Y from the general speed and heading (vector calculation).
 		speedX = speed * Math.cos(hdng);
 		speedY = speed * Math.sin(hdng);
 		speedZ = 0;
@@ -68,15 +71,18 @@ public class Plane implements Runnable {
 		return callsign;
 	}
 	
+	// Modify X, Y and altitude values.
 	private void move() {
 		x += speedX;
 		y += speedY;
 		altitude += speedZ;
 	}
 	
+	// Set the heading the plane must now point to.
 	public void setGoalHeading(int finalHead, char dir) {
 		this.finalHeading = finalHead;
 		this.direction = dir;
+		// Control tower may tell it to go left or right. Adjust as required.
 		switch (dir) {
 			case 'R':
 				if (finalHeading < heading) {
@@ -91,8 +97,11 @@ public class Plane implements Runnable {
 		}
 	}
 	
+	// Change heading if the final heading is different than current heading.
+	// This creates a semi-circular movement of the planes in the simulation.
 	private void headingChange() {
 		if (finalHeading != heading) {
+			// Based on direction specified by control tower, move angle by 5 degrees or less, if only less than 5 is missing.
 			switch (direction) {
 				case 'R':
 					if (finalHeading < (heading + 5)) {
@@ -109,6 +118,7 @@ public class Plane implements Runnable {
 					}
 					break;
 			}
+		// Set heading to a value in the range of 0 and 359.
 		} else if (finalHeading < 0) {
 			finalHeading += 360;
 			heading = finalHeading;
@@ -117,32 +127,38 @@ public class Plane implements Runnable {
 			finalHeading = heading;
 		}
 		
+		// Set values of speed in x and y with the new heading.
 		speedX = speed * Math.cos(Math.toRadians(heading));
 		speedY = speed * Math.sin(Math.toRadians(heading));
 	}
 	
+	// Set how the altitude will be changing based on the altitude goal and the distance to achieve it.
 	public void setAltitudeChange(double finalAlt, double dist) {
 		this.finalAltitude = finalAlt;
 		this.speedZ = - ((altitude - finalAltitude) / (dist / speed));
 	}
 	
+	// Change altitude.
 	private void altitudeChange() {
 		if (altitude >= finalAltitude - 75 && altitude <= finalAltitude + 75) {
 			speedZ = 0;
 		}
 	}
 	
+	// Set how the speed will be changing based on the speed goal and the distance to achieve it.
 	public void setSpeedGoal(double spdGoal, double dist) {
 		this.finalSpeed = spdGoal / 3.6;
 		this.speedRate = - ((speed - finalSpeed) / (dist / speed));
 	}
 	
+	// Change speed.
 	public void speedChange() {
 		if (!(speed >= finalSpeed - 0.015 && speed <= finalSpeed + 0.015)) {
 			speed += speedRate;
 		}
 	}
 	
+	// Land plane (speed decreases rapidly, altitude goes to 0.
 	public void land() {
 		setSpeedGoal(0, 95);
 		speedZ = 0;
@@ -150,6 +166,7 @@ public class Plane implements Runnable {
 		landing = true;
 	}
 	
+	// Has the plane stopped?
 	private boolean hasLanded() {
 		if (speed <= 0.8) {
 			speed = 0;
@@ -158,23 +175,26 @@ public class Plane implements Runnable {
 		return false;
 	}
 	
-	public void debug() {
-		System.out.println(model + "/" + callsign + " - Altitude: " + altitude + ". Speed: " + speed * 3.6 + ". X: " + x + ". Y: " + y + ". Heading: " + heading);
-	}
-	
+	// Each plane is a Thread.
 	public void run() {
 		while (!Thread.interrupted()) {
+			// Change heading, altitude and speed every time.
+			// The methods do nothing if there aren't changes to be made.
 			headingChange();
 			altitudeChange();
 			speedChange();
+			// Move the plane.
 			move();
 			
+			// See if its landing.
 			if (landing) {
+				// When plane lands, finish execution of the thread.
 				if (hasLanded()) {
 					gate = true;
 					break;
 				}
 			} else {
+				// Contact ATC for instructions.
 				atc.control(this);
 				atc.checkSafety();
 			}
@@ -187,12 +207,15 @@ public class Plane implements Runnable {
 		}
 	}
 	
+	// Display the plane in screen.
 	public void render(Graphics g) {
 		if (!gate) {
+			// Set square color. Red for danger, blue normal.
 			if (danger) {
 				g.setColor(Color.RED);
 				g.drawString("DANGER", (int) x - 15, (int) - + 15);
 			} else {
+				// Green value varies depending on the plane's altitude.
 				g.setColor(new Color(0, 255 - (((int) altitude * 2 / 255) % 256), 255));
 			}
 			
@@ -202,7 +225,8 @@ public class Plane implements Runnable {
 			g.drawString(callsign, (int) x + 15, (int) y + 15);
 		}
 	}
-
+	
+	// Getters and setters.
 	public double getX() {
 		return x;
 	}
@@ -233,5 +257,13 @@ public class Plane implements Runnable {
 	
 	public void setATC(ATC at) {
 		this.atc = at;
+	}
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
 	}
 }

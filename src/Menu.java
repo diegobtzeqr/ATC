@@ -26,21 +26,24 @@ import javax.swing.*;
 
 public class Menu extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
+	// Create required objects.
 	private JLabel callsign, planeType, distance, welcome, instructions1, instructions2, addPlaneLabel, addInstructions, entryPointLabel, numberPlanes;
 	private JTextField callsignTxt, planeTypeTxt, distanceTxt; 
 	private JButton addPlane, testSafe, testDanger, simulate, exit;
 	private String cs, pt, ep;
-	private String[] entryPointNames = {"South", "NorthEast", "NorthWest"};
+	private String[] entryPointNames = {"South", "Northeast", "Northwest"};
 	private JComboBox<Object> entryPoints;
 	private double dist;
 	private ArrayList<Plane> planes;
 	
+	// Menu constructor
 	public Menu(){
 		super();
 		this.setLayout(new BorderLayout());
+		// Set texts, fonts and size of the elements in the menu.
 		callsign = new JLabel ("Callsign: ", SwingConstants.RIGHT);
 		planeType = new JLabel ("Plane Type: ", SwingConstants.RIGHT);
-		distance = new JLabel ("Distance from entry point in meters: ", SwingConstants.RIGHT);
+		distance = new JLabel ("Distance from entry point in kilometers: ", SwingConstants.RIGHT);
 		callsignTxt = new JTextField(15);
 		planeTypeTxt = new JTextField(15);
 		distanceTxt = new JTextField(15);
@@ -64,6 +67,7 @@ public class Menu extends JFrame implements ActionListener {
 		planes = new ArrayList<>();
 		numberPlanes = new JLabel("Number of planes in simulation: " + planes.size() + " ", SwingConstants.RIGHT);
 		
+		// Create required panels and put elements in them.
 		Panel p = new Panel();
 		p.setLayout(new GridLayout(1,2));
 		p.add(welcome);
@@ -101,15 +105,20 @@ public class Menu extends JFrame implements ActionListener {
 		p4.add(numberPlanes);
 		p4.add(simulate);
 		
+		// Add panels to the main JFrame.
 		this.add(p1, BorderLayout.CENTER);
 		this.add(p2, BorderLayout.NORTH);
 		this.add(p4, BorderLayout.SOUTH);
+		
+		// Add listeners to buttons.
 		simulate.addActionListener(this);
 		addPlane.addActionListener(this);
 		testSafe.addActionListener(this);
 		testDanger.addActionListener(this);
 		entryPoints.addActionListener(this);
 		exit.addActionListener(this);
+		
+		// Set window properly.
 		this.setSize(1200, 1000);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setUndecorated(true);
@@ -120,24 +129,31 @@ public class Menu extends JFrame implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent ae) {
+		// Listeners, act depending on the button that was pressed.
 		if (ae.getSource().equals(addPlane)) {
+			// Get the data from the fields.
 			cs = callsignTxt.getText();
 			pt = planeTypeTxt.getText();
-			dist = Double.parseDouble(distanceTxt.getText()) / 10.0;
+			
+			// Convert kilometers to its equivalent in the simulation.
+			dist = Double.parseDouble(distanceTxt.getText()) * 1000.0 / 20.0;
 			ep = (String) entryPoints.getSelectedItem();
 			
+			// Based on the specified entry-point add the altitude, speed and heading, based on the distance, calculate x and y coordinates.
+			// Add planes to local ArrayList of planes
 			switch(ep) {
 			case "South":
 				planes.add(new Plane(cs, pt, 790.0 + dist * Math.sin(Math.toRadians(20)), 1000.0 + dist * Math.cos(Math.toRadians(20)), 28000.0, 250, 36.0, null));
 				break;
-			case "NorthEast":
+			case "Northeast":
 				planes.add(new Plane(cs, pt, 950.0 + dist * Math.cos(Math.toRadians(70)), - dist * Math.sin(Math.toRadians(70)), 22000.0, 110, 32.0, null));
 				break;
-			case "NorthWest":
+			case "Northwest":
 				planes.add(new Plane(cs, pt, 200.0 - dist * Math.sin(Math.toRadians(25)), - dist * Math.cos(Math.toRadians(25)), 20000.0, 65, 30.0, null));
 				break;
 			}
 			
+			// Reset inputs.
 			entryPoints.setSelectedIndex(0);
 			callsignTxt.setText("");
 			planeTypeTxt.setText("");
@@ -145,9 +161,11 @@ public class Menu extends JFrame implements ActionListener {
 			numberPlanes.setText("Number of planes in simulation: " + planes.size() + " ");
 		}
 		
+		// Start simulation.
 		if (ae.getSource().equals(simulate)) {
 			this.setVisible(false);
 			JFrame app = new JFrame("ATC");
+			// Send local ArrayList of planes as parameter in "new PanelATC()" to select the right ocnstructor.
 		    app.getContentPane().add(new PanelAtc(planes), BorderLayout.CENTER);
 		    app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		    app.setUndecorated(true);
@@ -157,6 +175,7 @@ public class Menu extends JFrame implements ActionListener {
 		    app.setVisible(true);
 		}
 		
+		// Start automatic safe simulation.
 		if (ae.getSource().equals(testSafe)) {
 			this.setVisible(false);
 			JFrame app = new JFrame("ATC");
@@ -169,6 +188,7 @@ public class Menu extends JFrame implements ActionListener {
 		    app.setVisible(true);
 		}
 		
+		// Start automatic dangerous simulation.
 		if (ae.getSource().equals(testDanger)) {
 			this.setVisible(false);
 			JFrame app = new JFrame("ATC");
@@ -181,18 +201,21 @@ public class Menu extends JFrame implements ActionListener {
 		    app.setVisible(true);
 		}
 		
+		// Exit program.
 		if (ae.getSource().equals(exit)) {
 			System.exit(0);
 		}
 	}
 	
 	public static void main(String args[]) {
+		// Create the menu when it starts.
 		@SuppressWarnings("unused")
 		Menu m = new Menu();
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 		String option;
 		
+		// Display in console GNU license.
 		do {
 			System.out.println("    ATC  Copyright (C) 2018 Diego Betanzos Esquer\r\n" + 
 					"    ATC comes with ABSOLUTELY NO WARRANTY; for details type `show w'.\r\n" + 
